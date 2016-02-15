@@ -1,0 +1,8 @@
+ocp-manager
+Makefile.config
+_obuild
+build.ocp
+ocp-manager.1
+ocp-build.root*
+.opam-switch
+TODO.txt

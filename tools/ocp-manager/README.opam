@@ -1,0 +1,74 @@
+Interaction between ocp-manager and OPAM
+----------------------------------------
+
+Managing "opam" with ocp-manager
+--------------------------------
+
+When calling "opam" through ocp-manager, ocp-manager will automatically
+set OPAMROOT and OPAMSWITCH to be consistent with the current switch
+managed by ocp-manager. This switch is decided by default as follows:
+
+1/ Read OCAML_VERSION env variable (manager-switch)
+2/ Read OPAMSWITCH env variable (opam-switch)
+3/ Read any .ocp-switch (manager-switch) or .opam-switch (opam-switch)
+    file in some parent directory
+4/ Read the current ocp-manager configuration (manager-switch)
+5/ Read OPAM configuration (opam-switch)
+
+For any of these options, the switch must be specified as either a
+manager-switch or an opam-switch. An opam-switch specifies the opam
+"SWITCH", or the ROOT and the SWITCH as "ROOT:SWITCH" (see below for
+how to manager opam roots). A manager-switch specifies directly the
+manager switch "SWITCH" or an opam-switch prefixed by "opam:", such as
+"opam:4.01.0".
+
+The order can be modified by adding a file
+"$HOME/.ocp/manager-order.txt", containing the following lines in 
+your preferred order:
+manager_variable
+opam_variable
+project_config
+manager_config
+opam_config
+
+Managing OPAM roots:
+--------------------
+
+You can create a new root, that can be used by OPAM as an independant
+installation:
+
+    ocp-manager -root-new ROOT
+
+ROOT must be some identifier (with no space or colon).
+
+You can also specify to which PATH the ROOT is associated. The empty ROOT
+"" is associated to the PATH "$HOME/.opam". If no PATH is provided, it 
+defaults to "$HOME/.ocp/manager-opam-ROOT"
+
+    ocp-manager -root-add ROOT:PATH
+
+You can delete an OPAM root using:
+
+    ocp-manager -root-del ROOT
+
+You can call "opam" with the following commands, which specify the ROOT to 
+be used, and maybe the SWITCH to be used too:
+
+    ocp-manager -opam ROOT        OPAM-ARGS
+    ocp-manager -opam ROOT:SWITCH OPAM-ARGS
+
+OPAM roots are stored by ocp-manager in the file:
+
+    $HOME/.ocp/manager-opamroots.txt
+
+with lines of format ROOT:PATH
+
+
+
+
+
+TODO:
+* What happens when 'opam' is called, from an ocp-manager switch that
+   is not an opam switch ?
+* What happens if both a .ocp-switch and a .opam-switch is provided ?
+   --> Warning
