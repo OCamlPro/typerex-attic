@@ -1,0 +1,6 @@
+2011-08-19: fixed offset by one-line, applied patch contributed by Anil
+
+2011-08-10: versoin 1.0, initial release
+  (extracted from TypeRex)
+
+

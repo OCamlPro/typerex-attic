@@ -1,0 +1,99 @@
+stdlib: arg.cmi format.cmi moreLabels.cmi set.cmi array.cmi gc.cmi
+   nativeint.cmi sort.cmi arrayLabels.cmi genlex.cmi obj.cmi stack.cmi
+    buffer.cmi hashtbl.cmi ocpstd.cmi std_exit.cmi callback.cmi
+   int32.cmi  oo.cmi stdLabels.cmi camlinternalLazy.cmi int64.cmi
+   parsing.cmi  stream.cmi camlinternalMod.cmi lazy.cmi
+   pervasives.cmi string.cmi camlinternalOO.cmi lexing.cmi
+   printexc.cmi stringCompat.cmi char.cmi list.cmi printf.cmi
+   stringCompat.p.cmi complex.cmi listLabels.cmi queue.cmi
+   stringLabels.cmi digest.cmi map.cmi random.cmi sys.cmi filename.cmi
+   marshal.cmi scanf.cmi weak.cmi bytes
+
+compiler-libs: annot.cmi arch.cmi asmgen.cmi asmlibrarian.cmi
+  asmlink.cmi asmpackager.cmi ast_mapper.cmi asttypes.cmi btype.cmi
+  bytegen.cmi bytelibrarian.cmi bytelink.cmi bytepackager.cmi
+  bytesections.cmi ccomp.cmi clambda.cmi clflags.cmi closure.cmi
+  cmi_format.cmi cmm.cmi cmmgen.cmi cmo_format.cmi cmt_format.cmi
+  cmx_format.cmi coloring.cmi comballoc.cmi compenv.cmi compile.cmi
+  compilenv.cmi compmisc.cmi config.cmi consistbl.cmi ctype.cmi
+  datarepr.cmi debuginfo.cmi dll.cmi emitaux.cmi emit.cmi emitcode.cmi
+  envaux.cmi env.cmi errors.cmi expunge.cmi genprintval.cmi ident.cmi
+  includeclass.cmi includecore.cmi includemod.cmi instruct.cmi
+  interf.cmi lambda.cmi lexer.cmi linearize.cmi liveness.cmi
+  location.cmi longident.cmi mach.cmi main_args.cmi matching.cmi
+  meta.cmi misc.cmi mtype.cmi opcodes.cmi oprint.cmi optcompile.cmi
+  opterrors.cmi optmain.cmi outcometree.cmi parmatch.cmi parse.cmi
+  parser.cmi parsetree.cmi path.cmi pparse.cmi pprintast.cmi
+  predef.cmi primitive.cmi printast.cmi printclambda.cmi printcmm.cmi
+  printinstr.cmi printlambda.cmi printlinear.cmi printmach.cmi
+  printtyp.cmi printtyped.cmi proc.cmi reg.cmi reload.cmi
+  reloadgen.cmi runtimedef.cmi schedgen.cmi scheduling.cmi
+  selectgen.cmi selection.cmi simplif.cmi spill.cmi split.cmi
+  stypes.cmi subst.cmi switch.cmi symtable.cmi syntaxerr.cmi tbl.cmi
+  terminfo.cmi topdirs.cmi toploop.cmi topmain.cmi topstart.cmi
+  trace.cmi translclass.cmi translcore.cmi translmod.cmi translobj.cmi
+  typeclass.cmi typecore.cmi typedecl.cmi typedtree.cmi
+  typedtreeIter.cmi typedtreeMap.cmi typemod.cmi typeopt.cmi types.cmi
+  typetexp.cmi warnings.cmi
+
+bigarray: bigarray
+threads: thread mutex condition
+dynlink: Dynlink
+
+
+cmdliner: cmdliner
+
+lwt: lwt_bytes.cmi lwt_chan.cmi lwt.cmi lwt_condition.cmi
+  lwt_daemon.cmi lwt_engine.cmi lwt_gc.cmi lwt_glib.cmi lwt_io.cmi
+  lwt_list.cmi lwt_log.cmi lwt_log_core.cmi lwt_log_rules.cmi
+  lwt_main.cmi lwt_mutex.cmi lwt_mvar.cmi lwt_pool.cmi lwt_pqueue.cmi
+  lwt_preemptive.cmi lwt_process.cmi lwt_react.cmi lwt_sequence.cmi
+  lwt_ssl.cmi lwt_stream.cmi lwt_switch.cmi lwt_sys.cmi
+  lwt_throttle.cmi lwt_timeout.cmi lwt_unix.cmi pa_lwt.cmi
+  pa_lwt_log.cmi
+
+zed: zed_cursor.cmi zed_edit.cmi zed_input.cmi zed_lines.cmi
+  zed_macro.cmi zed_re.cmi zed_rope.cmi zed_utf8.cmi
+
+cohttp: cohttp_async.cmi cohttp_async_io.cmi cohttp.cmi
+  cohttp_lwt_body.cmi cohttp_lwt.cmi cohttp_lwt_s.cmi
+  cohttp_lwt_unix.cmi cohttp_lwt_unix_debug.cmi cohttp_lwt_unix_io.cmi
+  cohttp_lwt_unix_net.cmi cohttp_lwt_xhr.cmi cohttp_top.cmi
+  string_io_lwt.cmi
+
+lambda-term: lTerm.cmi lTerm_draw.cmi lTerm_edit.cmi lTerm_event.cmi
+  lTerm_geom.cmi lTerm_history.cmi lTerm_inputrc.cmi lTerm_key.cmi
+  lTerm_mouse.cmi lTerm_read_line.cmi lTerm_resources.cmi
+  lTerm_style.cmi lTerm_text.cmi lTerm_ui.cmi lTerm_unix.cmi
+  lTerm_widget_callbacks.cmi lTerm_widget.cmi lTerm_windows.cmi
+
+js_of_ocaml: compiler.cmi cSS.cmi dom.cmi dom_events.cmi dom_html.cmi
+  dom_svg.cmi eventSource.cmi firebug.cmi form.cmi
+  graphics_js.cmi js.cmi json.cmi jsonp.cmi jsoo_findlib_support.cmi
+  jsooTop.cmi jsooTopError.cmi keycode.cmi lib_version.cmi lwt_js.cmi
+  lwt_js_events.cmi lwt_log_js.cmi ocamlbuild_js_of_ocaml.cmi
+  regexp.cmi sys_js.cmi typed_array.cmi tyxml_cast.cmi
+  tyxml_cast_sigs.cmi tyxml_js.cmi url.cmi webGL.cmi webSockets.cmi
+  xmlHttpRequest.cmi
+# file.cmi (conflicts with ocplib-system:file)
+
+core_kernel: check_caml_modify.cmi core_kernel.cmi
+  raise_without_backtrace.cmi  AvlTree IMap ISet
+
+core: core.cmi core_install_printers.cmi
+
+camomile: CamomileLibrary CamomileLibraryDyn
+
+
+conduit: Conduit Conduit_lwt_unix Resolver Resolver_lwt 
+ocplib-endian: EndianSig
+fieldslib: Fieldslib
+findlib:Findlib
+ipaddr: Ipaddr Macaddr
+
+re: Re_str
+react: React 
+sexplib:Sexplib
+str:Str
+uri: Uri
+
