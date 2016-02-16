@@ -18,12 +18,7 @@
 (*  SOFTWARE.                                                             *)
 (**************************************************************************)
 
-comp += [ "-bin-annot" ]
 
-if ocaml_version = "4.01.0+ocp1" || ocaml_version = "4.02.1+ocp1" then {
-  string_compat = [];
-  ocp_pp = [];
-} else {
-  string_compat = [ "ocplib-compat" ]
-  ocp_pp = [ "ocp-pp" ];
-}
+
+let _ =
+  if 1 < 2 then () else ()

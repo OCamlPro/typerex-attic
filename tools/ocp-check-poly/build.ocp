@@ -18,12 +18,11 @@
 (*  SOFTWARE.                                                             *)
 (**************************************************************************)
 
-comp += [ "-bin-annot" ]
+begin program "ocp-check-poly"
+  files = [ "polyMain.ml"]
+  requires = [ "compiler-libs.common" string_compat ]
+end
 
-if ocaml_version = "4.01.0+ocp1" || ocaml_version = "4.02.1+ocp1" then {
-  string_compat = [];
-  ocp_pp = [];
-} else {
-  string_compat = [ "ocplib-compat" ]
-  ocp_pp = [ "ocp-pp" ];
-}
+begin library "ocp-check-poly-tests"
+  files = [ "test.ml" ]
+end
