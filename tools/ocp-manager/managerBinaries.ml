@@ -94,7 +94,5 @@ let binaries = [
 "ocamlrss2.byte" ;
 "ocamltags" ;
 "ocamlweb" ;
-
 "ocamlfind" ;
-"opam" ;
 ]

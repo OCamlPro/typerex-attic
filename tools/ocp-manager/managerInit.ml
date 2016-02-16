@@ -106,6 +106,7 @@ let _ =
     end
   ) (ManagerBinaries.binaries)
 
+    (* Disable management of OPAM
 let _ =
   let filename = Filename.concat manager_defaults "opam" in
   if not (Sys.file_exists filename) then begin
@@ -117,3 +118,4 @@ let _ =
         symlink real_opam filename
     | None -> ()
   end
+    *)

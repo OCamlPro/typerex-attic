@@ -18,28 +18,6 @@
 (*  SOFTWARE.                                                             *)
 (**************************************************************************)
 
-
-(*
-  Two modes:
-  * System mode: ocp-manager takes control over /usr/bin/ocaml* files.
-  Any modification to these files require "sudoers" rights.
-
-  # ocp-manager -manage-dir /usr/bin/
-  # ocp-manager -restore-dir /usr/bin/
-  # ocp-manager -manage-file /usr/bin/menhir
-  # ocp-manager -restore-file /usr/bin/menhir
-  # ocp-manager -restore-all
-  # ocp-manager -manage-all
-
-  * User mode: ocp-manager takes control over ~/.ocp/manager-bin/ files
-  Modifications do not require "sudoers" rights.
-
-  $ ocp-manager -config
-  PATH=".../.ocp/manager-bin/:$PATH"; export PATH
-
-*)
-
-
 open ManagerMisc
 
 type compiler_kind =
@@ -53,19 +31,6 @@ type compiler = {
   compiler_kind : compiler_kind;
   compiler_prefix : string;
 }
-
-(*
-  let environ = ref StringMap.empty
-
-  let _ =
-  Array.iter (fun s ->
-  let (var, _) = OcpString.cut_at s '=' in
-  environ := StringMap.add var s !environ
-  ) (Unix.environment ())
-
-  let putenv var v =
-  environ := StringMap.add var (Printf.sprintf "%s=%s" var v) !environ
-*)
 
 let homedir = Sys.getenv "HOME"
 
@@ -422,6 +387,7 @@ let _ =
         end
     in
 
+    (*
     begin
       match c.compiler_kind with
       | OPAM_COMPILER (name, alias) ->
@@ -448,6 +414,7 @@ let _ =
 
       | _ -> ()
     end;
+    *)
 
     (* Use ~/.ocp/manager-env.txt to add env variables to switch *)
     begin try
