@@ -168,7 +168,7 @@ let add_edge edges n1 n2 =
       n
     | Some n -> n
   in
-  let n2 = get n1 n2 in
+  let _n2 = get n1 n2 in
   ()
 
 let print_graphes_per_set sets =

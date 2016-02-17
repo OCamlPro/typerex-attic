@@ -177,7 +177,11 @@ let of_cmt imp_filename =
           let cmi = Cmi_format.read_cmi cmi_filename in
           match cmi.Cmi_format.cmi_crcs with
             [] -> assert false
-          | (_, crc) :: _ -> Some crc
+#if OCAML_VERSION < "4.02"
+         | (_, crc) :: _ -> Some crc
+#else
+         | (_, crc) :: _ -> crc
+#endif
         with _ -> None
     in
     let imp_imports =
