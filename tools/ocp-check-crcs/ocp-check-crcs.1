@@ -1,0 +1,68 @@
+.\" Pipe this output to groff -man -Tutf8 | less
+.\"
+.TH "OCP-CHECK-CRCS" 1 "2016-01-31" "ocp-check-crcs 1.0" "OCamlPro"
+.\" Disable hyphenantion and ragged-right
+.nh
+.ad l
+.SH NAME
+.P
+ocp-check-crcs - Check consistency of an installed OCaml distribution
+.SH SYNOPSIS
+.P
+ocp-check-crcs \fIOPTIONS\fR
+.SH DESCRIPTION
+.P
+ocp-check-crcs can be used to check the consistency of an installed OCaml distribution.It checks that all object files are linkable (no missing dependency) and consistent (checksums are OK).
+.TP 4
+\fB-save\fR \fIFILE\fR
+Save env in FILE
+.TP 4
+\fB-load\fR \fIFILE\fR
+Load env from FILE
+.TP 4
+\fB-cmt\fR 
+Check .cmt/.cmti too
+.TP 4
+\fB-ignore-files\fR \fIFILE\fR
+File containing files/directories to ignore
+.TP 4
+\fB-query\fR \fIMODULE\fR
+Query info on module
+.TP 4
+\fB-chdir\fR \fIDIR\fR
+Specified dirs are relative to DIR
+.TP 4
+\fB-ignore-warnings\fR \fIFILE\fR
+File containing warning ids to ignore
+.TP 4
+\fB-o\fR \fIFILE\fR
+Target output to FILE (default is stderr, - for stdout)
+.TP 4
+\fB-man\fR 
+Display manpage
+.TP 4
+\fB-help\fR 
+Display this list of options
+.TP 4
+\fB--help\fR 
+Display this list of options
+.SH AUTHOR
+.P
+Fabrice Le Fessant
+.SH BUGS
+.P
+Use
+.P
+\fBcontact@ocamlpro.com\fR
+.P
+to report bugs in ocp-check-crcs.
+.SH COPYRIGHT
+.P
+Copyright (c) 2016
+.P
+INRIA & OCamlPro SAS
+.P
+GPLv3
+.SH SEE ALSO
+.P
+\fBocp-build\fR(1) \fBopam\fR(1) 

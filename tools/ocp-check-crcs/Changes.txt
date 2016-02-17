@@ -1,0 +1,15 @@
+2016-02-01:
+* Check corrupted files (wrong magic, read failed)
+* Read "ocp-check-crcs.ignore" in the file hierarchy to specify warnings
+   to ignore.
+* Use ".ocp-check-crcs-stop" to skip the current directory
+
+2016-01-31:
+* Add identifiers on warnings
+* Options to read ignore files, either to ignore directories or to ignore
+   warnings
+
+2016-01-29:
+* Check missing implementation, making a compilation unit not linkable
+* Check interface without implementation
+* Check conflicting libraries
