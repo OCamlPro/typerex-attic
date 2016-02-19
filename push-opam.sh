@@ -19,7 +19,7 @@ cp opam descr findlib $OPAMREPO/packages/${PACKAGE}/${PACKAGE}.$VERSION/ || exit
 URL=http://github.com/OCamlPro/${PACKAGE}/archive/${VERSION}.tar.gz
 rm -f ${VERSION}.tar.gz
 wget ${URL} || exit 2
-MD5SUM=$(md5sum ${VERSION}.tar.gz) 
+MD5SUM=$(md5sum ${VERSION}.tar.gz | cut -b 1-32) 
 echo 'archive: "'${URL}'"' > $OPAMREPO/packages/${PACKAGE}/${PACKAGE}.$VERSION/url
 echo 'checksum: "'${MD5SUM}'"' >> $OPAMREPO/packages/${PACKAGE}/${PACKAGE}.$VERSION/url
 

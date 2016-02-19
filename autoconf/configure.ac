@@ -1,4 +1,4 @@
-AC_INIT(typerex-attic,1.0.0)
+AC_INIT(typerex-attic,1.0.1)
 CONFIGURE_ARGS=$*
 
 AC_COPYRIGHT(Copyright 2016 OcamlPro SAS)
