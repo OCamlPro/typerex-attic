@@ -18,7 +18,15 @@
 (*  SOFTWARE.                                                             *)
 (**************************************************************************)
 
+if ocaml_version < "4.01" then {
+  compiler_libs_compat = [  "compiler-libs.compat" ]
+} else {
+  compiler_libs_compat = []
+}
+
 begin program "ocp-check-globals"
   files = [ "globalMain.ml"  (pp = ocp_pp) ]
-  requires = [ "compiler-libs.common" string_compat  "ocplib-system"  ]
+    requires = [ "compiler-libs.common" string_compat  "ocplib-system"
+                   compiler_libs_compat
+               ]
 end

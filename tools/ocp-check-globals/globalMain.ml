@@ -49,7 +49,7 @@ let new_fmt () =
 
 let (type_fmt, flush_type_fmt) = new_fmt ()
 let _ =
-  (* obsolete ?
+#if OCAML_VERSION < "4.01"
   let (out, flush, outnewline, outspace) =
     Format.pp_get_all_formatter_output_functions type_fmt ()
    in
@@ -57,11 +57,12 @@ let _ =
     ~out ~flush
     ~newline: (fun () -> out "\n  " 0 3)
     ~spaces: outspace
-  *)
+#else
   let out = Format.pp_get_formatter_out_functions type_fmt () in
   Format.pp_set_formatter_out_functions type_fmt { out with
     out_newline = (fun () -> out.out_string "\n  " 0 3); };
   ()
+#endif
 
 let (modtype_fmt, flush_modtype_fmt) = new_fmt ()
 
@@ -252,20 +253,42 @@ module ForIterator = struct
     | Texp_while (exp1, exp2)
       -> check_expressions [ exp1; exp2]
 
-#if OCAML_VERSION < "4.02"
+#if OCAML_VERSION < "4.01"
+    | Texp_construct (_path, _loc, _constr, list, _bool) ->
+#elif OCAML_VERSION < "4.02"
     | Texp_construct (_loc, _constr, list, _bool) ->
 #else
     | Texp_construct (_loc, _constr, list) ->
 #endif
       check_expressions list
     | Texp_record (fields, None) ->
-      List.iter (fun (_loc, _label, exp) -> check_expression exp) fields
+      List.iter (fun
+#if OCAML_VERSION < "4.01"
+        (_path, _loc, _label, exp) ->
+#else
+        (_loc, _label, exp) ->
+#endif
+    check_expression exp) fields
     | Texp_record (fields, Some exp) ->
       check_expression exp;
-      List.iter (fun (_loc, _label, exp) -> check_expression exp) fields
-
-    | Texp_field (exp, _loc, _label) -> check_expression exp
+      List.iter (fun
+#if OCAML_VERSION < "4.01"
+        (_path, _loc, _label, exp) ->
+#else
+        (_loc, _label, exp) ->
+#endif
+          check_expression exp) fields
+#if OCAML_VERSION < "4.01"
+    | Texp_field (exp, _loc, _label,_)
+#else
+    | Texp_field (exp, _loc, _label)
+#endif
+      -> check_expression exp
+#if OCAML_VERSION < "4.01"
+    | Texp_setfield (exp1, _path, _loc, _label, exp2) ->
+#else
     | Texp_setfield (exp1, _loc, _label, exp2) ->
+#endif
       check_expressions [exp1; exp2]
     | Texp_for (_var, _loc, exp1, exp2, _dirflag, exp3) ->
       check_expressions [exp1; exp2; exp3]
@@ -315,7 +338,9 @@ and check_cases cases =
       check_type  (Printf.sprintf "set var %S" (Ident.name ident)) pat.pat_loc pat.pat_type;
       check_pattern pat
     | Tpat_constant _ -> ()
-#if OCAML_VERSION < "4.02"
+#if OCAML_VERSION < "4.01"
+    | Tpat_construct (_, _, _, list, _ )
+#elif OCAML_VERSION < "4.02"
     | Tpat_construct (_, _, list, _ )
 #else
     | Tpat_construct (_, _, list)
@@ -326,7 +351,13 @@ and check_cases cases =
     | Tpat_variant (_, None, _) -> ()
     | Tpat_variant (_, Some pat, _) -> check_pattern pat
     | Tpat_record (fields, closed_flag) ->
-      List.iter (fun (_loc, _label, pat) -> check_pattern pat) fields
+      List.iter (fun
+#if OCAML_VERSION < "4.01"
+        (_path, _loc, _label, pat) ->
+#else
+        (_loc, _label, pat) ->
+#endif
+          check_pattern pat) fields
     | Tpat_or (pat1, pat2, row_desc_o) -> check_pattern pat1; check_pattern pat2
     | Tpat_lazy pat -> check_pattern pat
 

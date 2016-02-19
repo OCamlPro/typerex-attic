@@ -22,5 +22,7 @@
 begin program "ocp-imports"
     pp = ocp_pp
     files = [ "importExtract.ml" "importArch.ml" "importGraph.ml" "main.ml" ]
-    requires = [ "compiler-libs.common" string_compat "ocplib-system" ]
+    requires = [ "compiler-libs.common" string_compat "ocplib-system"
+                   compiler_libs_compat
+               ]
 end

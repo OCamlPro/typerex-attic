@@ -145,7 +145,9 @@ module Iterator = TypedtreeIter.MakeIterator(struct
     | Tstr_exception { ext_kind = Text_rebind (path, _) } ->
 #endif
       persist_path_apply expr_paths path
-#if OCAML_VERSION < "4.02"
+#if OCAML_VERSION < "4.01"
+    | Tstr_open (path, _) ->
+#elif OCAML_VERSION < "4.02"
     | Tstr_open (_, path, _) ->
 #else
     | Tstr_open { open_path = path } ->

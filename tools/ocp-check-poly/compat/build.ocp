@@ -18,11 +18,12 @@
 (*  SOFTWARE.                                                             *)
 (**************************************************************************)
 
-begin program "ocp-check-poly"
-  files = [ "polyMain.ml"]
-  requires = [ "compiler-libs.common" string_compat compiler_libs_compat ]
+if ocaml_version < "4.01" then {
+
+begin library "compiler-libs.compat"
+  archive = "ocamlcompat"
+  files = [ "typedtreeIter.ml"]
+  requires = [ "compiler-libs.common" ]
 end
 
-begin library "ocp-check-poly-tests"
-  files = [ "test.ml" ]
-end
+}

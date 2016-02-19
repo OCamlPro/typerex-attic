@@ -27,3 +27,9 @@ if ocaml_version = "4.01.0+ocp1" || ocaml_version = "4.02.1+ocp1" then {
   string_compat = [ "ocplib-compat" ]
   ocp_pp = [ "ocp-pp" ];
 }
+
+if ocaml_version < "4.01" then {
+  compiler_libs_compat = [  "compiler-libs.compat" ]
+} else {
+  compiler_libs_compat = []
+}
