@@ -1,0 +1,9 @@
+
+begin library "opam-url-parser"
+  files = [ "opamUrlParser.ml" ]
+end
+
+begin program "opam-archive"
+    files = [ "main.ml" ]
+    requires = [ "ocplib-system" "opam-url-parser" ]
+end
