@@ -5,5 +5,5 @@ end
 
 begin program "opam-archive"
     files = [ "main.ml" ]
-    requires = [ "ocplib-system" "opam-url-parser" ]
+    requires = [ "ocplib-system" "opam-url-parser" string_compat ]
 end

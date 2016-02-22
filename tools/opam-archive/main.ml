@@ -29,6 +29,8 @@
    * We should try to download all files once a week.
 *)
 
+open StringCompat
+
 let last_commit_cmd = "git rev-parse --short HEAD > last-commit.txt"
 
 let branch_missing_checksum = false
@@ -43,18 +45,20 @@ let command cmd =
 
 
 exception Issue
-let issue version title lines =
-  let filename = Printf.sprintf "issues/issue-%s-%s.txt" title version in
+let issue package version title lines =
+  let filename = Printf.sprintf "issues/issue-%s-%s.html" title version in
   let oc = open_out filename in
-  Printf.fprintf oc "Issue %s with %s:\n" title version;
+  Printf.fprintf oc "<h1>Issue %s with %s:</h1>\n" title version;
+  Printf.fprintf oc "<a href=\"https://github.com/ocaml/opam-repository/tree/master/packages/%s/%s/\">%s</a>\n" package version version;
+  Printf.fprintf oc "<pre>\n";
   List.iter (fun line ->
     Printf.fprintf oc "  %s\n" line) lines;
+  Printf.fprintf oc "</pre>\n";
   close_out oc;
   Printf.eprintf "New issue %s\n%!" filename;
   raise Issue
 
-let iter_download_archives () =
-  Printf.eprintf "iter_download_archives...\n%!";
+let iter_packages f =
   let dirname =  "packages" in
   let packages = Sys.readdir dirname in
   Array.iter (fun package ->
@@ -63,28 +67,32 @@ let iter_download_archives () =
     let versions = Sys.readdir dirname in
     Array.iter (fun version ->
       try
+        let dirname = Filename.concat dirname version in
+        f package version dirname
+      with Exit | Issue -> ()
+    ) versions
+  ) packages
 
-      (*      Printf.eprintf "    %s:\n%!" version; *)
-      let dirname = Filename.concat dirname version in
-      let url_file = Filename.concat dirname "url" in
+let parse_url_file package version dirname =
+  let url_file = Filename.concat dirname "url" in
       if not (Sys.file_exists url_file) then begin
         if String.length version > 5 &&
           String.sub version 0 5 <> "conf-" then
-          issue version "no-url" [ "No 'url' file" ]
+          issue package version "no-url" [ "No 'url' file" ]
         else raise Exit
       end;
       let idents =
         try
           OpamUrlParser.load url_file
         with _ ->
-          issue version "bad-format" [ "Cannot parse 'url' file" ]
+          issue package version "bad-format" [ "Cannot parse 'url' file" ]
       in
 
       let checksum = String.lowercase (
         try
           List.assoc "checksum" idents
         with Not_found ->
-          issue version "no-checksum" [ "File 'url' has no 'checksum' header" ]
+          issue package version "no-checksum" [ "File 'url' has no 'checksum' header" ]
       ) in
 
       if not (
@@ -97,7 +105,7 @@ let iter_download_archives () =
            done;
            !all_good)
       ) then
-        issue version "bad-checksum" [ "Checksum is not correct" ];
+        issue package version "bad-checksum" [ "Checksum is not correct" ];
 
       let url = try
                   List.assoc "archive" idents
@@ -105,10 +113,16 @@ let iter_download_archives () =
           try
             List.assoc "http" idents
           with Not_found ->
-          issue version "no-archive" [ "File 'url' has no 'archive' header" ]
+          issue package version "no-archive" [ "File 'url' has no 'archive' header" ]
       in
+      (url_file, idents, checksum, url)
 
+let iter_download_archives () =
+  Printf.eprintf "iter_download_archives...\n%!";
+  iter_packages (fun package version dirname ->
+      (*      Printf.eprintf "    %s:\n%!" version; *)
 
+    let url_file, idents, checksum, url = parse_url_file package version dirname in
       let backup_file = Printf.sprintf "backup/%c/%c/%c/%s"
         checksum.[0]
         checksum.[1]
@@ -131,7 +145,7 @@ let iter_download_archives () =
       ) then begin
         let lines = try File.lines_of_file ("log." ^ version) with
             _ -> [ "???" ] in
-        issue version "download-failed" (
+        issue package version "download-failed" (
           Printf.sprintf "Could not download %s:" url
                                                 ::
             lines)
@@ -147,7 +161,7 @@ let iter_download_archives () =
       let md5sum = File.string_of_file "checksum" in
       let md5sum = String.sub md5sum 0 32 in
       if md5sum <> checksum then begin
-        issue version "wrong-checksums" [
+        issue package version "wrong-checksums" [
           Printf.sprintf "Checksums differ for %s:" version;
           Printf.sprintf "   %S (expected)" checksum;
           Printf.sprintf "   %S (computed)" md5sum;
@@ -173,41 +187,57 @@ let iter_download_archives () =
           try
             let _package = Filename.basename url_file in
             let url = List.assoc "archive" idents in
-            (try Sys.remove "archive" with _ -> ());
-            ignore (
-              Printf.kprintf command
-                "git branch -D add-checksum-%s" version);
-            if
-              Printf.kprintf command "git checkout master" &&
-              Printf.kprintf command "git checkout ." &&
-              Printf.kprintf command "git checkout -b add-checksum-%s" version &&
-              Printf.kprintf command "wget -o log.%s --timeout=10 %s -O archive.%s.tar.gz" version url version &&
-              Printf.kprintf command
-              "md5sum archive.%s.tar.gz > checksum" version then begin
-                let md5sum = File.string_of_file "checksum" in
-                let md5sum = String.sub md5sum 0 32 in
-                let oc = open_out url_file in
-                List.iter (fun (s,v) ->
-                  Printf.fprintf oc "%s: %S\n" s v
-                ) idents;
-                Printf.fprintf oc "checksum: %S\n" md5sum;
-                close_out oc;
-                if not (
-                  Printf.kprintf command "git add %s" url_file &&
-                    Printf.kprintf command
-                    "git commit %s -m 'add checksum for %s'" url_file version &&
-                    Printf.kprintf command
-                    "git push -f --set-upstream origin add-checksum-%s" version
-                ) then exit 2;
-
-              end
       *)
-      with Exit | Issue -> ()
-    ) versions
-  ) packages;
+    );
   Printf.eprintf "iter_download_archives...done\n%!";
   ()
 
+
+let fix_crcs versions =
+  iter_packages (fun package version dirname ->
+    if StringSet.mem version !versions then begin
+
+      versions := StringSet.remove version !versions;
+
+      let url_file, idents, checksum, url = parse_url_file package version dirname in
+      (try Sys.remove "archive" with _ -> ());
+      ignore (
+        Printf.kprintf command
+          "git branch -D fix-checksum-%s" version);
+      if
+        Printf.kprintf command "git checkout master" &&
+          Printf.kprintf command "git checkout ." &&
+          Printf.kprintf command "git checkout -b fix-checksum-%s" version &&
+          Printf.kprintf command
+          "wget -o log.%s --timeout=10 %s -O archive.%s.tar.gz"
+          version url version &&
+          Printf.kprintf command
+          "md5sum archive.%s.tar.gz > checksum" version then begin
+            let md5sum = File.string_of_file "checksum" in
+            let md5sum = String.sub md5sum 0 32 in
+            let oc = open_out url_file in
+            List.iter (fun (s,v) ->
+              if s <> "checksum" then
+                Printf.fprintf oc "%s: %S\n" s v
+            ) idents;
+            Printf.fprintf oc "checksum: %S\n" md5sum;
+            close_out oc;
+            if not (
+              Printf.kprintf command "git add %s" url_file &&
+                Printf.kprintf command
+                "git commit %s -m 'fix checksum for %s'" url_file version &&
+                Printf.kprintf command
+                "git push -f --set-upstream origin fix-checksum-%s" version
+            ) then exit 2;
+          end
+    end
+  );
+  if !versions <> StringSet.empty then begin
+    Printf.eprintf "Error: some versions were not found:\n";
+    StringSet.iter (fun s-> Printf.eprintf "  %s\n%!" s) !versions;
+    exit 2
+  end;
+  exit 0
 
 let _ =
   if not (Sys.file_exists "packages") ||
@@ -215,6 +245,19 @@ let _ =
   then begin
     Printf.eprintf "opam-archive should be run at the root of an opam-repository clone.\n%!";
     exit 2
+  end;
+  let fix_crc = ref false in
+  let versions = ref StringSet.empty in
+  let arg_list = Arg.align [
+    "-fix-crc", Arg.Set fix_crc, " Fix the checksums of packages given in argument";
+  ] in
+  let arg_anon s = versions := StringSet.add s !versions in
+  let arg_usage = "opam-archive [OPTIONS] : backup all archives of an opam-repository" in
+  Arg.parse arg_list arg_anon arg_usage;
+
+  if !fix_crc then begin
+
+    fix_crcs versions;
   end;
 
   let current_commit = ref "" in
