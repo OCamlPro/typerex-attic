@@ -196,8 +196,12 @@ module ForIterator = struct
       let pure = StringSet.mem f_name !pure_functions in
       if not pure && !impure_init then
         impure_apply exp.exp_loc (Printf.sprintf "%S" f_name);
+#if OCAML_VERSION < "4.03"
       List.iter (fun (label, exp_o, opt) ->
-        match exp_o with None -> () | Some exp ->
+#else
+      List.iter (fun (label, exp_o) ->
+#endif
+         match exp_o with None -> () | Some exp ->
           if not pure && not !arg_ok then
             check_type (Printf.sprintf "arg to function %S" f_name)
               exp.exp_loc exp.exp_type;
@@ -208,7 +212,11 @@ module ForIterator = struct
       if !impure_init then
         impure_apply exp.exp_loc "anonymous";
       check_expression f_exp;
+#if OCAML_VERSION < "4.03"
       List.iter (fun (label, exp_o, opt) ->
+#else
+      List.iter (fun (label, exp_o) ->
+#endif
         match exp_o with None -> () | Some exp ->
           if not !arg_ok then
             check_type "arg to anon function" exp.exp_loc exp.exp_type;
@@ -300,6 +308,10 @@ module ForIterator = struct
     | Texp_function _
     | Texp_ident _
     | Texp_constant _
+#if OCAML_VERSION >= "4.03"
+    | Texp_unreachable
+    | Texp_extension_constructor (_,_)
+#endif
       -> ()
     | Texp_send (_, _, _)|Texp_new (_, _, _)|Texp_instvar (_, _, _)|
       Texp_setinstvar (_, _, _, _)|Texp_override (_, _)|Texp_object (_, _) ->

@@ -27,7 +27,7 @@ let command = "ocp-check-crcs"
 let version = CrcVersion.version
 
 let gen_manpage arg_list =
-  let open Manpage.Types in
+  let open Manpage2.Types in
   let man_command = command in
   let man_section = 1 in
   let man_date = release_date in
@@ -47,7 +47,7 @@ let gen_manpage arg_list =
   ]
   in
   Printf.printf "%s\n%!"
-    (Manpage.groff_page
+    (Manpage2.groff_page
        {
          man_command;
          man_short_descr;

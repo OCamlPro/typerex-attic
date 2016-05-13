@@ -88,6 +88,24 @@ let parse_url_file package version dirname =
           issue package version "bad-format" [ "Cannot parse 'url' file" ]
       in
 
+      let url = try
+                  List.assoc "archive" idents
+        with Not_found ->
+          try
+            List.assoc "http" idents
+          with Not_found ->
+          issue package version "no-archive" [ "File 'url' has no 'archive' header" ]
+      in
+      (url_file, idents, url)
+
+let iter_download_archives () =
+  Printf.eprintf "iter_download_archives...\n%!";
+  iter_packages (fun package version dirname ->
+      (*      Printf.eprintf "    %s:\n%!" version; *)
+
+    let url_file, idents, url = parse_url_file package version dirname in
+
+
       let checksum = String.lowercase (
         try
           List.assoc "checksum" idents
@@ -107,23 +125,7 @@ let parse_url_file package version dirname =
       ) then
         issue package version "bad-checksum" [ "Checksum is not correct" ];
 
-      let url = try
-                  List.assoc "archive" idents
-        with Not_found ->
-          try
-            List.assoc "http" idents
-          with Not_found ->
-          issue package version "no-archive" [ "File 'url' has no 'archive' header" ]
-      in
-      (url_file, idents, checksum, url)
-
-let iter_download_archives () =
-  Printf.eprintf "iter_download_archives...\n%!";
-  iter_packages (fun package version dirname ->
-      (*      Printf.eprintf "    %s:\n%!" version; *)
-
-    let url_file, idents, checksum, url = parse_url_file package version dirname in
-      let backup_file = Printf.sprintf "backup/%c/%c/%c/%s"
+    let backup_file = Printf.sprintf "backup/%c/%c/%c/%s"
         checksum.[0]
         checksum.[1]
         checksum.[2]
@@ -199,7 +201,7 @@ let fix_crcs versions =
 
       versions := StringSet.remove version !versions;
 
-      let url_file, idents, checksum, url = parse_url_file package version dirname in
+      let url_file, idents, url = parse_url_file package version dirname in
       (try Sys.remove "archive" with _ -> ());
       ignore (
         Printf.kprintf command

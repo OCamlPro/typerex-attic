@@ -31,7 +31,7 @@ begin program "ocp-check-crcs"
    requires = [ "compiler-libs.optcomp" string_compat ]
 
    files = [
-        "manpage.ml"
+        "manpage2.ml" (* to merge with ocplib-lang/manpage.ml *)
 
         "crcVersion.ml" (ocp2ml
                            env_strings = [ "release_date"; "copyright_years" ]

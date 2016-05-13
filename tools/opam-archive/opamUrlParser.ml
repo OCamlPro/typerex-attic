@@ -18,6 +18,8 @@
 (*  SOFTWARE.                                                             *)
 (**************************************************************************)
 
+open StringCompat
+
 open Genlex
 
 let lexer = Genlex.make_lexer [ ":" ]

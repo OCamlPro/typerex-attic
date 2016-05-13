@@ -18,6 +18,7 @@
 (*  SOFTWARE.                                                             *)
 (**************************************************************************)
 
+open StringCompat
 
 module Filepath : sig
   type t
