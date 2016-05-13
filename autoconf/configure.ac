@@ -1,4 +1,4 @@
-AC_INIT(typerex-attic,1.0.1)
+AC_INIT(typerex-attic,1.0.2)
 CONFIGURE_ARGS=$*
 
 AC_COPYRIGHT(Copyright 2016 OcamlPro SAS)
@@ -22,48 +22,63 @@ AC_ARG_ENABLE(version-check,
 AC_PROG_CC
 
 # Check that OCaml version is greater or equal to 4.00.0
+
+AC_PROG_OCAML
+
+AX_SPLIT_VERSION(OCAMLVERSION)
+OCAML_MAJOR_VERSION=$AX_MAJOR_VERSION
+OCAML_MINOR_VERSION=$AX_MINOR_VERSION
+OCAML_POINT_VERSION=$AX_POINT_VERSION
+
+if test "$OCAMLC" = "no"; then
+   AC_MSG_ERROR([You must install the OCaml compiler])
+fi
+
 if test "$VERSION_CHECK" = "yes" ; then
-
-  AC_PROG_OCAML
-  AC_PROG_CAMLP4
-
-  AX_SPLIT_VERSION(OCAMLVERSION)
-  OCAML_MAJOR_VERSION=$AX_MAJOR_VERSION
-  OCAML_MINOR_VERSION=$AX_MINOR_VERSION
-  OCAML_POINT_VERSION=$AX_POINT_VERSION
-
-  if test "$OCAMLC" = "no"; then
-     AC_MSG_ERROR([You must install the OCaml compiler])
-  fi
-  AX_COMPARE_VERSION( [$OCAMLVERSION], [lt], [3.12.1],
-     AC_MSG_ERROR([Your version of OCaml: $OCAMLVERSION is not supported]))
+  MINIMAL_VERSION=4.00.0
+  AX_COMPARE_VERSION( [$OCAMLVERSION], [lt], [${MINIMAL_VERSION}],
+     AC_MSG_ERROR([Your version of OCaml: $OCAMLVERSION is not supported. You need ${MINIMAL_VERSION} at least.]))
 fi
 
-if test "x$prefix" = "xNONE"; then
-#  prefix=$ac_default_prefix
-  prefix="`eval dirname $OCAMLLIB`"
-  libdir=$OCAMLLIB
-  base="`eval basename $prefix`"
-  echo base=$base
-  if test "x$base" = "xlib"; then
-    prefix="`eval dirname $prefix`"
-  fi
-else
-  libdir=${libdir}/ocaml
+
+ocamldir='${libdir}/ocaml'
+metadir='${ocamldir}'
+
+AC_PROG_FINDLIB
+if test "${OCAMLFIND}" != "no"; then
+  metadir="$(${OCAMLFIND} -printconf destdir)"
+  echo "initializing metadir from ocamlfind config"
 fi
-test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 
-libdir=${libdir}/typerex
+if test "x${prefix}" = "xNONE"; then
+  if test "x${OPAM_PREFIX}" != "x"; then
+    echo inheriting OPAM settings from OPAM_PREFIX
+    prefix="${OPAM_PREFIX}"
+    ocamldir='${libdir}'
+    metadir="${OPAM_PREFIX}/lib"
+  else
+    prefix="$(dirname ${OCAMLLIB})"
+    base="$(basename ${prefix})"
+    if test "x${base}" = "xlib"; then
+      prefix="$(dirname ${prefix})"
+    fi
+  fi
+fi
 
-bindir="`eval echo ${bindir}`"
-bindir="`eval echo ${bindir}`"
-mandir="`eval echo ${mandir}`"
-mandir="`eval echo ${mandir}`"
-libdir="`eval echo ${libdir}`"
-libdir="`eval echo ${libdir}`"
-datarootdir="`eval echo ${datarootdir}`"
-datarootdir="`eval echo ${datarootdir}`"
-datadir=${datarootdir}/typerex
+AC_ARG_WITH(ocamldir,
+ [AS_HELP_STRING([--with-ocamldir=DIRNAME],
+               [root storage of the OCaml distribution])],
+ [ocamldir="${withval}"],
+ [])
+
+AC_ARG_WITH(metadir,
+ [AS_HELP_STRING([--with-metadir=DIRNAME],
+               [store meta files in DIRNAME])],
+ [metadir="${withval}"],
+ [])
+
+AC_SUBST(ocamldir)
+AC_SUBST(metadir)
 
 AC_SUBST(OCAML_MAJOR_VERSION)
 AC_SUBST(OCAML_MINOR_VERSION)
@@ -77,7 +92,16 @@ AC_CONFIG_FILES(
 AC_OUTPUT
 
 echo
-echo Executables will be installed in ${bindir}
-echo Libraries will be installed in ${libdir}
-echo Data files will be installed in ${datadir}
-echo Manual pages will be installed in ${mandir}
+echo "Summary:"
+echo "prefix=${prefix}"
+echo "exec_prefix=${exec_prefix}"
+echo "bindir=${bindir}"
+echo "   (Executables will be installed there)"
+echo "libdir=${libdir}"
+echo "ocamldir=${ocamldir}"
+echo "   (OCaml files will be installed there)"
+echo "metadir=${metadir}"
+echo "   (META files will be installed there)"
+echo "datarootdir=${datarootdir}"
+echo "mandir=${mandir}"
+echo "   (Manual pages will be installed there)"

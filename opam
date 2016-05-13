@@ -7,7 +7,11 @@ homepage: "http://www.typerex.org/"
 dev-repo: "https://github.com/OCamlPro/typerex-attic.git"
 bug-reports: "https://github.com/OCamlPro/typerex-attic/issues"
 build: [
-  [ "./configure" "--prefix" "%{prefix}%"  ]
+  [ "./configure"
+    "--prefix" "%{prefix}%"
+    "--ocamldir" "%{libdir}%"
+    "--metadir" "%{libdir}%"
+  ]
   [ make ]
 ]
 install: [

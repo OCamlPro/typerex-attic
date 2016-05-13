@@ -18,6 +18,7 @@
 (*  SOFTWARE.                                                             *)
 (**************************************************************************)
 
+open StringCompat
 
 open ManagerMisc
 open ManagerInit
