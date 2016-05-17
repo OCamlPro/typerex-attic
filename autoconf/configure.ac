@@ -1,7 +1,7 @@
-AC_INIT(typerex-attic,1.0.2)
+AC_INIT(typerex-attic,1.0.3)
 CONFIGURE_ARGS=$*
 
-AC_COPYRIGHT(Copyright 2016 OcamlPro SAS)
+AC_COPYRIGHT(Copyright 2016 OCamlPro SAS)
 AC_CONFIG_MACRO_DIR([m4])
 
 
@@ -34,11 +34,9 @@ if test "$OCAMLC" = "no"; then
    AC_MSG_ERROR([You must install the OCaml compiler])
 fi
 
-if test "$VERSION_CHECK" = "yes" ; then
   MINIMAL_VERSION=4.00.0
   AX_COMPARE_VERSION( [$OCAMLVERSION], [lt], [${MINIMAL_VERSION}],
      AC_MSG_ERROR([Your version of OCaml: $OCAMLVERSION is not supported. You need ${MINIMAL_VERSION} at least.]))
-fi
 
 
 ocamldir='${libdir}/ocaml'
