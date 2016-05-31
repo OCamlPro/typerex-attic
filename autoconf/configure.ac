@@ -109,6 +109,11 @@ AC_CHECK_TOOL([OCAML_TOOL_ocp_build],[ocp-build],[no])
 if test "$OCAML_TOOL_ocp_build" = "no"; then
    AC_MSG_ERROR([Please install OCaml tool 'ocp-build'.])
 fi
+
+# This file will be inserted inside autoconf/configure.ac by ocp-autoconf
+# If you create variables, do not forget to add them in ocp-autoconf.config
+# in the 'extra_config_vars' and 'extra_bool_vars' options.
+
 AC_SUBST(CONFIGURE_ARGS)
 AC_SUBST(ROOTDIR)
 AC_SUBST(prefix)

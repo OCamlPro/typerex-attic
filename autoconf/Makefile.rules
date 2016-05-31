@@ -3,13 +3,14 @@ autoconf/Makefile.config: autoconf/configure
 	./configure $(CONFIGURE_ARGS)
 
 autoconf/configure: ocp-autoconf.config ocp-autoconf.ac
-	ocp-autoconf
+	ocp-autoconf || touch autoconf/configure
 
 ocp-build-build:
 	ocp-build init
 	ocp-build
 
 ocp-build-install:
+	ocp-build init
 	ocp-build install \
 		 -install-bin $(bindir) \
 		 -install-lib $(ocamldir) \

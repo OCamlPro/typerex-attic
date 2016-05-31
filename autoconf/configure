@@ -4150,6 +4150,11 @@ if test "$OCAML_TOOL_ocp_build" = "no"; then
    as_fn_error $? "Please install OCaml tool 'ocp-build'." "$LINENO" 5
 fi
 
+# This file will be inserted inside autoconf/configure.ac by ocp-autoconf
+# If you create variables, do not forget to add them in ocp-autoconf.config
+# in the 'extra_config_vars' and 'extra_bool_vars' options.
+
+
 
 
 
