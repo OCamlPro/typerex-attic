@@ -11,6 +11,6 @@ clean:
 install:
 	if [ -e  $(OBUILD)/$(PROJECT)/$(PROJECT).asm ]; then \
 		cp -f $(OBUILD)/$(PROJECT)/$(PROJECT).asm \
-			$(BINDIR)/$(PROJECT); \
+			$(bindir)/$(PROJECT); \
 	fi
 

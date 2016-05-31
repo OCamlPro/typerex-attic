@@ -10,9 +10,9 @@ ocp-manager.1: $(OBUILD)/ocp-manager/ocp-manager.asm
 	$(OBUILD)/ocp-manager/ocp-manager.asm -man > ocp-manager.1
 
 install: ocp-manager.1
-	cp $(OBUILD)/ocp-manager/ocp-manager.asm $(BINDIR)/ocp-manager
-	mkdir -p $(MANDIR)/man1
-	cp ocp-manager.1 $(MANDIR)/man1/ocp-manager.1
+	cp $(OBUILD)/ocp-manager/ocp-manager.asm $(bindir)/ocp-manager
+	mkdir -p $(mandir)/man1
+	cp ocp-manager.1 $(mandir)/man1/ocp-manager.1
 	ocp-manager -list
 	@echo
 	@echo "Don't forget to update your configuration files with"
