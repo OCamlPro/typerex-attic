@@ -1,18 +1,16 @@
-all:
-	ocp-build init
-	ocp-build
 
+
+include autoconf/Makefile.config
+
+all: ocp-build-build
+
+# install: ocp-build-install
 install:
 	for tool in tools/*; do $(MAKE) -C $$tool install; done
 
-clean:
-	ocp-build init
-	ocp-build clean
+clean: ocp-build-clean
+
+distclean: clean ocp-distclean
 	find . -name '*~' -exec rm -f {} \;
 
-distclean: clean
-	rm -rf _obuild
-	rm -f autoconf/Makefile.config
-	rm -f autoconf/config.status
-	rm -f autoconf/config.log
-
+include autoconf/Makefile.rules
