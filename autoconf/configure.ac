@@ -8,6 +8,7 @@
 #                                                     #
 #######################################################
 AC_INIT(typerex-attic,1.1)
+CONFIGURE_ARGS=$*
 AC_COPYRIGHT(Copyright 2016 OCamlPro SAS)
 OCAML_MINIMAL_VERSION=4.00.0
 AC_CONFIG_MACRO_DIR([m4])
