@@ -24,7 +24,9 @@ open StringCompat
 
 type header_sep = {
   sep_name : string;
-  sep_regexp : Str.regexp;
+  sep_start : string -> bool ;
+  sep_stop : string -> bool ;
+  sep_single : string -> bool ;
   sep_add_line : int; (* add the header at this line by default *)
   mutable sep_headers : header list;
 }
@@ -65,35 +67,54 @@ let homedir = try
 let config_dir = Filename.concat homedir ".ocp/check-headers"
 
 let max_header_lines = ref 30
+let min_header_lines = ref 3
 let min_char_repetition = ref 50
 
-let stars = String.concat "" (
-    Array.to_list (Array.init !min_char_repetition (fun _ -> "\\*")))
-let spaces = "[\t ]*"
-let new_header_sep ?(sep_add_line=0) sep_name sep_regexp =
+let new_header_sep ?(sep_add_line=0) sep_name sep_start sep_stop sep_single =
   { sep_name;
-    sep_regexp = Str.regexp sep_regexp;
+    sep_start ;
+    sep_stop ;
+    sep_single ;
     sep_headers = [];
     sep_add_line;
   }
+
+let matches regexp =
+  let r = Str.regexp_case_fold regexp in
+  fun s ->
+    try
+      ignore (Str.search_forward r s 0) ;
+      true
+    with Not_found ->
+      false
 
 (* Morally, these structures should be in [env], as they are modified
    during the scan. Instead, we reset them at the beginning of
    [scan_dirs].
 *)
-let ml_header = new_header_sep  "ML Header" (spaces ^ "(" ^ stars)
-let cc_header = new_header_sep "C header" (spaces ^ "/" ^ stars)
-let sh_header = new_header_sep ~sep_add_line:2 "Shell header"
-    (spaces ^ String.make !min_char_repetition '#')
+let ml_header =
+  new_header_sep  "ML Header"
+    (matches "^[ \t]*(\\*\\([^*]\\|\\*+[^*)]\\|\\*+$\\)*$")
+    (matches "^\\([^(]\\|(+[^(*]\\)*\\*+)[ \t]*$")
+    (matches "^[ \t]*(\\*\\([^*]\\|\\*+[^*)]\\)*\\*+)[ \t]*$")
+
+let cc_header =
+  new_header_sep "C header"
+    (matches "^[ \t]*/\\*\\([^*]\\|\\*+[^*/]\\|\\*+$\\)*$")
+    (matches "^\\([^/]\\|(+[^/*]\\)*\\*+/[ \t]*$")
+    (matches "\\(^[ \t]*/\\*\\([^*]\\|\\*+[^*/]\\)*\\*+/[ \t]*$\\|^[ \t]*//.*$\\)")
+
+let sh_header =
+  new_header_sep ~sep_add_line:2 "Shell header"
+    (fun _ -> false)
+    (fun _ -> false)
+    (matches "^[ \t]*#.*$")
 
 let reset_headers () =
   List.iter (fun sep ->
       sep.sep_headers <- []) [
     ml_header; cc_header; sh_header
   ]
-
-let is_header_sep line header_sep =
-  Str.string_match header_sep.sep_regexp line 0
 
 let new_header_id s = Digest.to_hex (Digest.string s)
 
@@ -119,31 +140,49 @@ let new_header env header_sep header_pos header_lines  =
     in
     [header_pos, h]
 
+let has_magic_word =
+  let regexp =
+    String.concat "\\|"
+      (List.map Str.quote
+         [ "copyright" ; "copyleft" ;
+           "(c)" ; "©" ;
+           "license" ; "licence" ]) in
+  matches regexp
+
 let read_headers env lines header_sep =
-  let rec iter_out pos lines headers =
+  let looks_like_a_header lines =
+    lines <> [] &&
+    let nlines = List.length lines in
+    nlines >= !min_header_lines &&
+    nlines <= !max_header_lines &&
+    List.exists has_magic_word lines in
+  let add_header pos lines headers =
+    if looks_like_a_header lines then
+      let header = new_header env header_sep pos lines in
+      header @ headers
+    else headers in
+  let rec collect spos pos lines acc headers =
     match lines with
-    | [] -> List.rev headers
+    | [] ->
+      List.rev (add_header spos (List.rev acc) headers)
     | line :: lines ->
-      if is_header_sep line header_sep then
-        iter_in (pos+1) lines pos [line] headers
+      if header_sep.sep_single line then
+        collect spos (pos+1) lines (line :: acc) headers
+      else if header_sep.sep_start line then
+        let rec eat pos lines acc = match lines with
+          | [] -> (* unterminated comment *)
+            List.rev (add_header spos (List.rev acc) headers)
+          | line :: lines ->
+            if header_sep.sep_stop line then
+              collect (pos+1) (pos+1) lines []
+                (add_header spos (List.rev (line :: acc)) headers)
+            else
+              eat (pos+1) lines (line :: acc) in
+        eat (pos+1) lines (line :: acc)
       else
-        iter_out (pos+1) lines headers
-  and iter_in pos lines header_pos header_lines headers =
-    match lines with
-    | [] -> (* abort header *)
-      List.rev headers
-    | line :: lines ->
-      if is_header_sep line header_sep then
-        let header_lines = List.rev (line :: header_lines) in
-        let header = new_header env header_sep header_pos header_lines in
-        iter_out (pos+1) lines (header @ headers)
-      else
-      if pos - header_pos > !max_header_lines then (* not a header *)
-        iter_out (pos+1) lines headers
-      else
-        iter_in (pos+1) lines header_pos (line :: header_lines) headers
-  in
-  iter_out 0 lines []
+        collect (pos+1) (pos+1) lines []
+          (add_header spos (List.rev acc) headers) in
+  collect 0 0 lines [] []
 
 let record_header env file_name header_sep =
   let lines = File.lines_of_file file_name in
@@ -424,6 +463,10 @@ let () =
   let arg_skip_headers = ref StringSet.empty in
 
   let arg_list = Arg.align [
+    "--min-header-lines", Arg.Set_int min_header_lines,
+    "NLINES threshold from which a comment block can be a header (3)" ;
+    "--max-header-lines", Arg.Set_int max_header_lines,
+    "NLINES threshold until which a comment block can be a header (20)" ;
     "--add-default", Arg.String (fun s ->
       arg_add_default := s :: !arg_add_default),
     "HEADER_ID Add this header as the default for these files";
