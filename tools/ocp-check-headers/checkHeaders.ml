@@ -146,7 +146,7 @@ let read_headers env lines header_sep =
   iter_out 0 lines []
 
 let record_header env file_name header_sep =
-  let lines = File.lines_of_file file_name in
+  let lines = FileLines.read_file file_name in
   let file_headers = read_headers env lines header_sep in
   let file = {
     file_name;
@@ -227,13 +227,13 @@ let rec scan_dir env dir =
   let config =
     let dirfile = Filename.concat dir ignore_files_filename in
     if Sys.file_exists dirfile then
-      list_ignore_files config (File.lines_of_file dirfile)
+      list_ignore_files config (FileLines.read_file dirfile)
     else config in
 
   let config =
     let dirfile = Filename.concat dir ignore_headers_filename in
     if Sys.file_exists dirfile then
-      list_ignore_headers config (File.lines_of_file dirfile)
+      list_ignore_headers config (FileLines.read_file dirfile)
     else config
   in
   let env = if config == env.config then env else
@@ -361,7 +361,7 @@ let save_ignored env =
 let replace_header src_header dst_header line_pos file =
   Printf.printf "Replacing %s by %s on %s\n%!" src_header.header_id
     dst_header.header_id file.file_name;
-  let lines = File.lines_of_file file.file_name in
+  let lines = FileLines.read_file file.file_name in
   let rec insert_header pos lines rev_lines =
     if pos = line_pos then
       check_src_header lines src_header.header_lines rev_lines
@@ -391,7 +391,7 @@ let replace_header src_header dst_header line_pos file =
   in
   try
     let lines = insert_header 0 lines [] in
-    File.file_of_lines file.file_name lines;
+    FileLines.write_file file.file_name lines;
     true
   with Not_found -> false
 
@@ -399,7 +399,7 @@ let add_default_header header file =
   Printf.printf "Adding header %s on %s\n%!" header.header_id file.file_name;
   (* This is the easiest one *)
   let sep = header.header_sep in
-  let lines = File.lines_of_file file.file_name in
+  let lines = FileLines.read_file file.file_name in
   let rec insert_header pos lines rev_lines =
     if pos = sep.sep_add_line then
       (List.rev rev_lines) @ header.header_lines @ (
@@ -413,7 +413,7 @@ let add_default_header header file =
         insert_header (pos+1) lines (line :: rev_lines)
   in
   let lines = insert_header 0 lines [] in
-  File.file_of_lines file.file_name lines;
+  FileLines.write_file file.file_name lines;
   true
 
 let () =
