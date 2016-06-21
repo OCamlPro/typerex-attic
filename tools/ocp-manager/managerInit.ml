@@ -61,8 +61,8 @@ let auto_update () =
     Printf.eprintf "Updating %S with %S\n%!" manager_binary argv0;
     (* To avoid "binary in use" lock *)
     (try Sys.remove manager_binary with _ -> ());
-    let content = File.string_of_file argv0 in
-    File.file_of_string manager_binary content;
+    let content = FileString.read_file argv0 in
+    FileString.write_file manager_binary content;
     chmod manager_binary 0o755
   end
 

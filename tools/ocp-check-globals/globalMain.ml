@@ -190,6 +190,11 @@ module ForIterator = struct
       check_bindings bindings;
       check_expression exp
 
+#if OCAML_VERSION >= "4.04"
+    | Texp_letexception (_extcstr,exp) ->
+      check_expression exp
+#endif
+
     | Texp_apply (
         { exp_desc = Texp_ident (f_path, _loc, _) }, f_args) ->
       let f_name = Path.name f_path in
@@ -527,7 +532,7 @@ let add_stdlib () =
 
 
 let add_ignore filename =
-  File.iter_lines (fun s ->
+  FileString.iter_lines (fun s ->
     if String.length s > 0 then
        match s.[0] with
        | '#' | ' ' | '/' -> ()
