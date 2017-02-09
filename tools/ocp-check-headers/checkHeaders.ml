@@ -1,22 +1,15 @@
 (**************************************************************************)
 (*                                                                        *)
-(*                              OCamlPro TypeRex                          *)
+(*   Typerex Tools                                                        *)
 (*                                                                        *)
-(*   Copyright OCamlPro 2011-2016. All rights reserved.                   *)
-(*   This file is distributed under the terms of the GPL v3.0             *)
-(*      (GNU Public Licence version 3.0).                                 *)
+(*   Copyright 2011-2017 OCamlPro SAS                                     *)
 (*                                                                        *)
-(*     Contact: <typerex@ocamlpro.com> (http://www.ocamlpro.com/)         *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU General Public License version 3 described in the file       *)
+(*   LICENSE.                                                             *)
 (*                                                                        *)
-(*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       *)
-(*  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES       *)
-(*  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND              *)
-(*  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS   *)
-(*  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN    *)
-(*  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN     *)
-(*  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE      *)
-(*  SOFTWARE.                                                             *)
 (**************************************************************************)
+
 
 
 
@@ -145,7 +138,7 @@ let read_headers env lines header_sep =
   in
   iter_out 0 lines []
 
-let record_header env file_name header_sep =
+let record_header ?(config=false) env file_name header_sep =
   let lines = FileLines.read_file file_name in
   let file_headers = read_headers env lines header_sep in
   let file = {
@@ -160,7 +153,8 @@ let record_header env file_name header_sep =
              each header_sep to have a different set of no-header files. *)
       new_header env header_sep 0 [ header_sep.sep_name ]
     | _ -> file_headers in
-  List.iter (fun (header_pos, header) ->
+  if not config then
+    List.iter (fun (header_pos, header) ->
       header.header_files <- (header_pos, file) :: header.header_files
     ) file_headers
 
@@ -297,7 +291,7 @@ let scan_dirs config dirs =
   List.iter (fun (file, header_sep) ->
     let dirfile = Filename.concat config_dir file in
     if Sys.file_exists dirfile then
-      record_header env dirfile header_sep
+      record_header ~config:true env dirfile header_sep
   ) [ "headers.ml", ml_header;
       "headers.cc", cc_header;
       "headers.sh", sh_header];
