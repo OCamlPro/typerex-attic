@@ -72,7 +72,7 @@ let find_up version_files =
     None
 
 let get_version_of_file filename =
-  match File.lines_of_file filename with
+  match FileLines.read_file filename with
     version :: _ -> Some (version, filename)
   | _ -> None
 
@@ -82,7 +82,7 @@ let opamroot_default =
 let opamroot = ref opamroot_default
 
 let get_version_of_opam_file filename =
-  match File.lines_of_file filename with
+  match FileLines.read_file filename with
   | [] -> None
   | version :: root :: _ ->
     opamroot := root;
@@ -230,7 +230,7 @@ let read_compilers () =
 
   let comps =
     try
-      FileLines.of_file (Filename.concat opamroot "aliases")
+      FileLines.read_file (Filename.concat opamroot "aliases")
     with _ -> []
   in
   List.iter (fun line ->
@@ -418,7 +418,7 @@ let _ =
 
     (* Use ~/.ocp/manager-env.txt to add env variables to switch *)
     begin try
-            File.iter_lines (fun line ->
+            FileString.iter_lines (fun line ->
               let (switch, line) = OcpString.cut_at line ' ' in
               let (var, value) = OcpString.cut_at line '=' in
               if switch = c.compiler_name || switch = "*" then
@@ -433,7 +433,7 @@ let _ =
     assert (find_up [ ".ocp-env", store_env ] = None);
     List.iter (fun filename ->
       try
-        File.iter_lines (fun line ->
+        FileString.iter_lines (fun line ->
           let (switch, line) = OcpString.cut_at line ' ' in
           let (var, value) = OcpString.cut_at line '=' in
           if switch = c.compiler_name || switch = "*" then

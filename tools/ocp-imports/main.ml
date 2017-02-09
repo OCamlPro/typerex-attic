@@ -263,7 +263,7 @@ let load_sets filename =
     ) units in
     sets := (set_name, units) :: !sets
   in
-  File.iter_lines (fun line ->
+  FileString.iter_lines (fun line ->
     if line <> "" && line.[0] != '#' then begin
       if String.contains line ':' then flush ();
       Buffer.add_string b line;

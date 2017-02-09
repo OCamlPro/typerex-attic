@@ -9,7 +9,7 @@
 #######################################################
 AC_INIT(typerex-attic,1.1)
 CONFIGURE_ARGS=$*
-AC_COPYRIGHT(Copyright 2016 OCamlPro SAS)
+AC_COPYRIGHT(Copyright 2016-2017 OCamlPro SAS)
 OCAML_MINIMAL_VERSION=4.00.0
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -174,7 +174,7 @@ AC_SUBST(OCAMLDOC)
 AC_SUBST(OCAMLLIB)
 AC_SUBST(OCAMLBIN)
 AC_SUBST(OCAML_USE_BINANNOT)
-AC_CONFIG_FILES(Makefile.config config.ocpgen ocaml-config.h)
+AC_CONFIG_FILES(Makefile.config config.ocpgen config.ocp2gen ocaml-config.h)
 AC_OUTPUT
 
 echo
