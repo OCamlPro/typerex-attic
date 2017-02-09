@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-======= 
->>>>>>> Fix for 4.05
 autoconf/.gitignore 00973f185af428536c3caff11a53626d
 autoconf/Makefile.config.in 8edc4964d3e8d09eb9867cadc98d13a7
 autoconf/Makefile.rules c9e85dee44380b1a855cb2d49da44d54
