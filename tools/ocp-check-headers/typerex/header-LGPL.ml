@@ -1,30 +1,11 @@
 (**************************************************************************)
 (*                                                                        *)
-(*   Typerex Tools                                                        *)
+(*   Typerex Libraries                                                    *)
 (*                                                                        *)
 (*   Copyright 2011-2017 OCamlPro SAS                                     *)
 (*                                                                        *)
 (*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU General Public License version 3 described in the file       *)
-(*   LICENSE.                                                             *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
-
-
-
-begin program "ocp-check-headers"
-    files = [
-      "checkHeadersFiles.ml" (
-        file2string = [
-          "typerex/header-LGPL.ml"
-          "typerex/header-GPL.ml"
-          "typerex/header-LGPL.c"
-          "typerex/header-GPL.c"
-          "typerex/LICENSE"
-        ]
-      )
-      "checkHeaders.ml"
-    ]
-    requires = [ "ocplib-system" "str" string_compat ]
-end

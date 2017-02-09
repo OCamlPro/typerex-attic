@@ -9,22 +9,3 @@
 (*   LICENSE.                                                             *)
 (*                                                                        *)
 (**************************************************************************)
-
-
-
-
-begin program "ocp-check-headers"
-    files = [
-      "checkHeadersFiles.ml" (
-        file2string = [
-          "typerex/header-LGPL.ml"
-          "typerex/header-GPL.ml"
-          "typerex/header-LGPL.c"
-          "typerex/header-GPL.c"
-          "typerex/LICENSE"
-        ]
-      )
-      "checkHeaders.ml"
-    ]
-    requires = [ "ocplib-system" "str" string_compat ]
-end
