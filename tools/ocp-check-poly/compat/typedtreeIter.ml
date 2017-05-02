@@ -1,14 +1,15 @@
 (**************************************************************************)
 (*                                                                        *)
-(*                                OCaml                                   *)
+(*   Typerex Tools                                                        *)
 (*                                                                        *)
-(*    Thomas Gazagnaire (OCamlPro), Fabrice Le Fessant (INRIA Saclay)     *)
+(*   Copyright 2011-2017 OCamlPro SAS                                     *)
 (*                                                                        *)
-(*   Copyright 2007 Institut National de Recherche en Informatique et     *)
-(*   en Automatique.  All rights reserved.  This file is distributed      *)
-(*   under the terms of the Q Public License version 1.0.                 *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU General Public License version 3 described in the file       *)
+(*   LICENSE.                                                             *)
 (*                                                                        *)
 (**************************************************************************)
+
 
 (*
 TODO:

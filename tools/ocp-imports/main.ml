@@ -1,22 +1,15 @@
 (**************************************************************************)
 (*                                                                        *)
-(*                              OCamlPro TypeRex                          *)
+(*   Typerex Tools                                                        *)
 (*                                                                        *)
-(*   Copyright OCamlPro 2011-2016. All rights reserved.                   *)
-(*   This file is distributed under the terms of the GPL v3.0             *)
-(*      (GNU Public Licence version 3.0).                                 *)
+(*   Copyright 2011-2017 OCamlPro SAS                                     *)
 (*                                                                        *)
-(*     Contact: <typerex@ocamlpro.com> (http://www.ocamlpro.com/)         *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU General Public License version 3 described in the file       *)
+(*   LICENSE.                                                             *)
 (*                                                                        *)
-(*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       *)
-(*  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES       *)
-(*  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND              *)
-(*  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS   *)
-(*  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN    *)
-(*  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN     *)
-(*  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE      *)
-(*  SOFTWARE.                                                             *)
 (**************************************************************************)
+
 
 
 open StringCompat
@@ -263,7 +256,7 @@ let load_sets filename =
     ) units in
     sets := (set_name, units) :: !sets
   in
-  File.iter_lines (fun line ->
+  FileString.iter_lines (fun line ->
     if line <> "" && line.[0] != '#' then begin
       if String.contains line ':' then flush ();
       Buffer.add_string b line;

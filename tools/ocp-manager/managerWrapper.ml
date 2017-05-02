@@ -1,22 +1,15 @@
 (**************************************************************************)
 (*                                                                        *)
-(*                              OCamlPro TypeRex                          *)
+(*   Typerex Tools                                                        *)
 (*                                                                        *)
-(*   Copyright OCamlPro 2011-2016. All rights reserved.                   *)
-(*   This file is distributed under the terms of the GPL v3.0             *)
-(*      (GNU Public Licence version 3.0).                                 *)
+(*   Copyright 2011-2017 OCamlPro SAS                                     *)
 (*                                                                        *)
-(*     Contact: <typerex@ocamlpro.com> (http://www.ocamlpro.com/)         *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU General Public License version 3 described in the file       *)
+(*   LICENSE.                                                             *)
 (*                                                                        *)
-(*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       *)
-(*  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES       *)
-(*  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND              *)
-(*  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS   *)
-(*  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN    *)
-(*  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN     *)
-(*  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE      *)
-(*  SOFTWARE.                                                             *)
 (**************************************************************************)
+
 
 open ManagerMisc
 
@@ -72,7 +65,7 @@ let find_up version_files =
     None
 
 let get_version_of_file filename =
-  match File.lines_of_file filename with
+  match FileLines.read_file filename with
     version :: _ -> Some (version, filename)
   | _ -> None
 
@@ -82,7 +75,7 @@ let opamroot_default =
 let opamroot = ref opamroot_default
 
 let get_version_of_opam_file filename =
-  match File.lines_of_file filename with
+  match FileLines.read_file filename with
   | [] -> None
   | version :: root :: _ ->
     opamroot := root;
@@ -230,7 +223,7 @@ let read_compilers () =
 
   let comps =
     try
-      FileLines.of_file (Filename.concat opamroot "aliases")
+      FileLines.read_file (Filename.concat opamroot "aliases")
     with _ -> []
   in
   List.iter (fun line ->
@@ -418,7 +411,7 @@ let _ =
 
     (* Use ~/.ocp/manager-env.txt to add env variables to switch *)
     begin try
-            File.iter_lines (fun line ->
+            FileString.iter_lines (fun line ->
               let (switch, line) = OcpString.cut_at line ' ' in
               let (var, value) = OcpString.cut_at line '=' in
               if switch = c.compiler_name || switch = "*" then
@@ -433,7 +426,7 @@ let _ =
     assert (find_up [ ".ocp-env", store_env ] = None);
     List.iter (fun filename ->
       try
-        File.iter_lines (fun line ->
+        FileString.iter_lines (fun line ->
           let (switch, line) = OcpString.cut_at line ' ' in
           let (var, value) = OcpString.cut_at line '=' in
           if switch = c.compiler_name || switch = "*" then

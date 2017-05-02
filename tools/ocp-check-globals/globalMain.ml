@@ -1,22 +1,15 @@
 (**************************************************************************)
 (*                                                                        *)
-(*                              OCamlPro TypeRex                          *)
+(*   Typerex Tools                                                        *)
 (*                                                                        *)
-(*   Copyright OCamlPro 2011-2016. All rights reserved.                   *)
-(*   This file is distributed under the terms of the GPL v3.0             *)
-(*      (GNU Public Licence version 3.0).                                 *)
+(*   Copyright 2011-2017 OCamlPro SAS                                     *)
 (*                                                                        *)
-(*     Contact: <typerex@ocamlpro.com> (http://www.ocamlpro.com/)         *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU General Public License version 3 described in the file       *)
+(*   LICENSE.                                                             *)
 (*                                                                        *)
-(*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       *)
-(*  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES       *)
-(*  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND              *)
-(*  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS   *)
-(*  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN    *)
-(*  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN     *)
-(*  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE      *)
-(*  SOFTWARE.                                                             *)
 (**************************************************************************)
+
 
 
 (*
@@ -268,24 +261,29 @@ module ForIterator = struct
 #else
     | Texp_construct (_loc, _constr, list) ->
 #endif
-      check_expressions list
-    | Texp_record (fields, None) ->
-      List.iter (fun
-#if OCAML_VERSION < "4.01"
-        (_path, _loc, _label, exp) ->
+  check_expressions list
+#if OCAML_VERSION < "4.04"
+    | Texp_record (fields, exp) ->
+#elif OCAML_VERSION < "4.04"
+    | Texp_record { fields; exp } ->
 #else
-        (_loc, _label, exp) ->
+    | Texp_record { fields; extended_expression = exp } ->
 #endif
-    check_expression exp) fields
-    | Texp_record (fields, Some exp) ->
-      check_expression exp;
-      List.iter (fun
 #if OCAML_VERSION < "4.01"
+      List.iter (function
         (_path, _loc, _label, exp) ->
-#else
+#elif OCAML_VERSION < "4.04"
+      List.iter (function
         (_loc, _label, exp) ->
+#else
+      Array.iter (function
+        (_label, Kept _ctype) -> ()
+      | (_label, Overridden (_loc,exp)) ->
 #endif
-          check_expression exp) fields
+         check_expression exp) fields;
+      begin match exp with | None -> ()
+      | Some exp -> check_expression exp
+        end
 #if OCAML_VERSION < "4.01"
     | Texp_field (exp, _loc, _label,_)
 #else
@@ -316,6 +314,10 @@ module ForIterator = struct
     | Texp_send (_, _, _)|Texp_new (_, _, _)|Texp_instvar (_, _, _)|
       Texp_setinstvar (_, _, _, _)|Texp_override (_, _)|Texp_object (_, _) ->
       assert false (* object style not supported *)
+#if OCAML_VERSION >= "4.04"
+    | Texp_letexception (_, exp) ->
+      check_expression exp
+#endif
 
 #if !(OCAML_VERSION < "4.02")
 
@@ -527,7 +529,7 @@ let add_stdlib () =
 
 
 let add_ignore filename =
-  File.iter_lines (fun s ->
+  FileString.iter_lines (fun s ->
     if String.length s > 0 then
        match s.[0] with
        | '#' | ' ' | '/' -> ()

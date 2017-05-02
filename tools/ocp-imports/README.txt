@@ -80,3 +80,34 @@ js_of_ocaml: compiler.cmi cSS.cmi dom.cmi dom_events.cmi dom_html.cmi
 }}}
 
 You can also use the `opam-sets.txt` in this directory.
+
+With `-arch`, ocp-imports will generate the following files:
+* archi1.pdf: transitive dependencies between sets
+* archi2.pdf: import dependencies between sets
+* archi3.pdf: value dependencies between sets (same as archi2.pdf, but without
+    the links corresponding to types)
+* set-imports-[USER]-[USED].txt: for a given USER, which USED are used.
+* set-exports-[USED]-[USER].txt: for a given USED, which USER uses it
+   USER and USED can be:
+   * M : Module
+   * S : Set
+   * MV: Module.value
+   * SM : Set-Module
+   * SMV : Set-Module.value
+   * SV : Set-value
+
+Other solutions to display the architecture of a project
+========================================================
+
+* Oug: only for 3.12.1
+* Mohamed has patched OCaml and a small script to display (.dot -> .pdf),
+    for a given function within a module:
+     * which other functions are used inside the module, and transitively,
+        from these functions
+     * idem, but also with accesses to other external modules
+     * idem, but with the name of the values within external modules
+
+TODO:
+* Implement Mohamed's ideas
+* Try to infer sets from directories of sources
+

@@ -1,22 +1,15 @@
 (**************************************************************************)
 (*                                                                        *)
-(*                              OCamlPro TypeRex                          *)
+(*   Typerex Tools                                                        *)
 (*                                                                        *)
-(*   Copyright OCamlPro 2011-2016. All rights reserved.                   *)
-(*   This file is distributed under the terms of the GPL v3.0             *)
-(*      (GNU Public Licence version 3.0).                                 *)
+(*   Copyright 2011-2017 OCamlPro SAS                                     *)
 (*                                                                        *)
-(*     Contact: <typerex@ocamlpro.com> (http://www.ocamlpro.com/)         *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU General Public License version 3 described in the file       *)
+(*   LICENSE.                                                             *)
 (*                                                                        *)
-(*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       *)
-(*  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES       *)
-(*  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND              *)
-(*  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS   *)
-(*  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN    *)
-(*  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN     *)
-(*  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE      *)
-(*  SOFTWARE.                                                             *)
 (**************************************************************************)
+
 
 
 open ManagerMisc
@@ -61,8 +54,8 @@ let auto_update () =
     Printf.eprintf "Updating %S with %S\n%!" manager_binary argv0;
     (* To avoid "binary in use" lock *)
     (try Sys.remove manager_binary with _ -> ());
-    let content = File.string_of_file argv0 in
-    File.file_of_string manager_binary content;
+    let content = FileString.read_file argv0 in
+    FileString.write_file manager_binary content;
     chmod manager_binary 0o755
   end
 

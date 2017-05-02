@@ -9,33 +9,3 @@
 (*   LICENSE.                                                             *)
 (*                                                                        *)
 (**************************************************************************)
-
-command="ocp-manager"
-copyright = [ "OCamlPro/INRIA 2011-2014" ]
-authors = [ "Fabrice LE FESSANT <fabrice.le_fessant@ocamlpro.com>" ]
-license = [ "GPLv3" ]
-
-begin program "ocp-manager"
-  files = [
-    "managerVersion.ml" ( ocp2ml = true
-          env_strings = [ "command";
-                          "release_date";
-                        ] )
-
-   "managerMisc.ml"
-   "managerWrapper.ml"
-
-   "managerBinaries.ml"
-   "managerInit.ml"
-   "managerSwitch.ml"
-
-   "managerTools.ml"
-   "managerCompile.ml"
-   "managerConfig.ml"
-
-   "managerRestore.ml"
-
-   "managerMain.ml"
-  ]
-  requires = [ "ocplib-lang" (* "opam-lib" *) "ocplib-system" ]
-end
