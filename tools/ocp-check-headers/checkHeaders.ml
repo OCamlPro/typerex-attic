@@ -557,14 +557,17 @@ let () =
     "--replace-by", Arg.String (fun s ->
       arg_replace_by := Some s),
     "HEADER_ID Replace by this header";
+
     "--from", Arg.String (fun src_id ->
       match !arg_replace_by with
       | None ->
         Printf.eprintf "Error: --from should come after --replace-by\n%!";
         exit 2
       | Some dst_id ->
-        args.arg_replace <-
-          (Printf.sprintf "%s:%s" src_id dst_id) :: args.arg_replace
+        List.iter (fun id ->
+          args.arg_replace <-
+            (Printf.sprintf "%s:%s" id dst_id) :: args.arg_replace
+        ) (OcpString.split src_id ':')
     ),
     "HEADER_ID Replace this header";
     "--skip", Arg.String (fun id ->

@@ -51,7 +51,7 @@ let arg_usage =
 
 
 let get_arg arg_help default =
-  let open Manpage.RAW in
+  let open OcpManpage.RAW in
   let (n, arg_help) = OcpString.cut_at arg_help ' ' in
   let n =
     if n = "" then
@@ -62,7 +62,7 @@ let get_arg arg_help default =
   [I n], arg_help
 
 let groff_of_args arg_list =
-  let open Manpage.RAW in
+  let open OcpManpage.RAW in
   List.map (fun (arg_name, arg_spec, arg_help) ->
     let (arg_spec, arg_help) = match arg_spec with
       | Arg.Int _ -> get_arg arg_help "INT"
@@ -79,7 +79,7 @@ let groff_of_args arg_list =
   ) arg_list
 
 let gen_manpage () =
-  let open Manpage in
+  let open OcpManpage in
   let open RAW in
   let man_name = String.uppercase ManagerVersion.command in
   let man_section = 1 in

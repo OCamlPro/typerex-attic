@@ -264,7 +264,7 @@ module ForIterator = struct
   check_expressions list
 #if OCAML_VERSION < "4.04"
     | Texp_record (fields, exp) ->
-#elif OCAML_VERSION < "4.05"
+#elif OCAML_VERSION < "4.04"
     | Texp_record { fields; exp } ->
 #else
     | Texp_record { fields; extended_expression = exp } ->
@@ -272,7 +272,7 @@ module ForIterator = struct
 #if OCAML_VERSION < "4.01"
       List.iter (function
         (_path, _loc, _label, exp) ->
-#elif OCAML_VERSION < "4.05"
+#elif OCAML_VERSION < "4.04"
       List.iter (function
         (_loc, _label, exp) ->
 #else
